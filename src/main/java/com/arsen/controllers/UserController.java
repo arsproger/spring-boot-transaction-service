@@ -2,7 +2,6 @@ package com.arsen.controllers;
 
 import com.arsen.dtos.UserDto;
 import com.arsen.mappers.UserMapper;
-import com.arsen.models.User;
 import com.arsen.services.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,36 +21,29 @@ public class UserController {
 
     @GetMapping
     public List<UserDto> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return users.stream()
+        return userService.getAllUsers().stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        return userMapper.toDto(user);
+        return userMapper.toDto(userService.getUserById(id));
     }
 
     @GetMapping("/{email}")
     public UserDto getUserByEmail(@PathVariable String email) {
-        User user = userService.getUserByEmail(email);
-        return userMapper.toDto(user);
+        return userMapper.toDto(userService.getUserByEmail(email));
     }
 
     @PostMapping
     public UserDto createUser(@RequestBody UserDto userDto) {
-        User user = userMapper.toEntity(userDto);
-        User createdUser = userService.createUser(user);
-        return userMapper.toDto(createdUser);
+        return userMapper.toDto(userService.createUser(userMapper.toEntity(userDto)));
     }
 
-    @PutMapping
-    public UserDto updateUser(@RequestBody UserDto userDto) {
-        User user = userMapper.toEntity(userDto);
-        User updatedUser = userService.updateUser(user);
-        return userMapper.toDto(updatedUser);
+    @PutMapping("/{id}")
+    public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        return userMapper.toDto(userService.updateUser(id, userMapper.toEntity(userDto)));
     }
 
     @DeleteMapping("/{userId}")

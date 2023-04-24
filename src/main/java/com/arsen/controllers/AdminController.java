@@ -32,12 +32,17 @@ public class AdminController {
         return adminService.revenueRecognition(orderId);
     }
 
-    @GetMapping("/generate-monthly-report")
+    @GetMapping("/monthly-order-report")
     public ResponseEntity<byte[]> downloadMonthReport(@RequestParam Integer year, @RequestParam Integer month) {
         return adminService.downloadMonthlyReport(year, month);
     }
 
-    @GetMapping("/generate-user-orders")
+    @GetMapping("/monthly-product-report")
+    public ResponseEntity<byte[]> downloadMonthlyProductReport(@RequestParam Long companyId) {
+        return adminService.downloadMonthlyProductReport(companyId);
+    }
+
+    @GetMapping("/user-orders-history")
     public ResponseEntity<byte[]> downloadUserOrdersInfo(@RequestParam Long userId) {
         return adminService.downloadUserOrdersInfo(userId);
     }

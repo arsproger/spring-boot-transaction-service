@@ -18,9 +18,8 @@ public class UserService {
 
     public User createUser(User user) {
         user.setRole(Role.ROLE_USER);
-        user.setReserveBalance(new BigDecimal(0));
-        if (user.getBalance() == null)
-            user.setBalance(new BigDecimal(0));
+        if (user.getBalance() == null) user.setBalance(new BigDecimal(0));
+        if (user.getReserveBalance() == null) user.setReserveBalance(new BigDecimal(0));
 
         return userRepository.save(user);
     }
@@ -29,7 +28,15 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public User updateUser(User user) {
+    public User updateUser(Long id, User updatedUser) {
+        User user = userRepository.findById(id).orElse(null);
+        if(user == null)
+            return null;
+
+        user.setFullName(updatedUser.getFullName());
+        user.setBalance(updatedUser.getBalance());
+        user.setReserveBalance(updatedUser.getReserveBalance());
+
         return userRepository.save(user);
     }
 

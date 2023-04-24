@@ -2,7 +2,6 @@ package com.arsen.controllers;
 
 import com.arsen.dtos.ProductDto;
 import com.arsen.mappers.ProductMapper;
-import com.arsen.models.Product;
 import com.arsen.services.ProductService;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,46 +21,39 @@ public class ProductController {
 
     @GetMapping
     public List<ProductDto> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return products.stream()
+        return productService.getAllProducts().stream()
                 .map(productMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ProductDto getProductById(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
-        return productMapper.toDto(product);
+        return productMapper.toDto(productService.getProductById(id));
     }
 
     @GetMapping("/company/{companyId}")
     public List<ProductDto> getProductsByCompanyId(@PathVariable Long companyId) {
-        List<Product> products = productService.getProductsByCompanyId(companyId);
-        return products.stream()
+        return productService.getProductsByCompanyId(companyId).stream()
                 .map(productMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/user/{userId}")
     public List<ProductDto> getProductsByUserId(@PathVariable Long userId) {
-        List<Product> products = productService.getProductsByUserId(userId);
-        return products.stream()
+        return productService.getProductsByUserId(userId).stream()
                 .map(productMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @PostMapping("/{id}")
     public ProductDto createProduct(@PathVariable("id") Long companyId, @RequestBody ProductDto productDto) {
-        Product product = productMapper.toEntity(productDto);
-        Product createdProduct = productService.createProduct(companyId, product);
-        return productMapper.toDto(createdProduct);
+        return productMapper.toDto(productService
+                .createProduct(companyId, productMapper.toEntity(productDto)));
     }
 
-    @PutMapping
-    public ProductDto updateProduct(@RequestBody ProductDto productDto) {
-        Product product = productMapper.toEntity(productDto);
-        Product updatedProduct = productService.updateProduct(product);
-        return productMapper.toDto(updatedProduct);
+    @PutMapping("/{id}")
+    public ProductDto updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+        return productMapper.toDto(productService.updateProduct(id, productMapper.toEntity(productDto)));
     }
 
     @DeleteMapping("/{id}")

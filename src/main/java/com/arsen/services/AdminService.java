@@ -5,54 +5,40 @@ import com.arsen.models.Company;
 import com.arsen.models.Order;
 import com.arsen.models.Product;
 import com.arsen.models.User;
-import com.arsen.repositories.CompanyRepository;
-import com.arsen.repositories.OrderRepository;
-import com.arsen.repositories.ProductRepository;
-import com.arsen.repositories.UserRepository;
 import com.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class AdminService {
-    private final UserRepository userRepository;
+    private final CsvDownload csvDownload;
     private final UserService userService;
-    private final ProductRepository productRepository;
     private final ProductService productService;
-    private final OrderRepository orderRepository;
     private final OrderService orderService;
-    private final CompanyRepository companyRepository;
+    private final CompanyService companyService;
 
     @Autowired
-    public AdminService(UserService userService, ProductService productService,
-                        UserRepository userRepository, OrderRepository orderRepository,
-                        OrderService orderService, CompanyRepository companyRepository,
-                        ProductRepository productRepository) {
+    public AdminService(CsvDownload csvDownload, UserService userService, ProductService productService,
+                        OrderService orderService, CompanyService companyService) {
+        this.csvDownload = csvDownload;
         this.userService = userService;
         this.productService = productService;
-        this.userRepository = userRepository;
-        this.orderRepository = orderRepository;
         this.orderService = orderService;
-        this.companyRepository = companyRepository;
-        this.productRepository = productRepository;
+        this.companyService = companyService;
     }
 
     // начисления средств на баланс пользователя
     public Boolean replenishment(Long userId, BigDecimal amount) {
         User user = userService.getUserById(userId);
         user.setBalance(user.getBalance().add(amount));
-        userRepository.save(user);
+        userService.updateUser(user.getId(), user);
         return true;
     }
 
@@ -65,8 +51,8 @@ public class AdminService {
 
         user.setBalance(user.getBalance().subtract(product.getPrice()));
         user.setReserveBalance(user.getReserveBalance().add(product.getPrice()));
-        userRepository.save(user);
-        orderRepository.save(
+        userService.updateUser(user.getId(), user);
+        orderService.createOrder(
                 Order.builder()
                         .date(LocalDateTime.now())
                         .user(user)
@@ -92,100 +78,51 @@ public class AdminService {
         order.setStatus(OrderStatus.ACCEPTED);
         product.setUser(user);
 
-        orderRepository.save(order);
-        companyRepository.save(company);
-        productRepository.save(product);
-        userRepository.save(user);
+        orderService.updateOrder(order.getId(), order);
+        companyService.updateCompany(company.getId(), company);
+        productService.updateProduct(product.getId(), product);
+        userService.updateUser(user.getId(), user);
 
         return true;
     }
 
-    public String generateMonthlyReport(int year, int month) {
-        // создаем форматтер для даты
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    // метод для получения месячного отчета по каждой услуге компании
+    public ResponseEntity<byte[]> downloadMonthlyProductReport(Long companyId) {
+        Company company = companyService.getCompanyById(companyId);
+        List<Product> products = company.getProducts();
 
-        // определяем начало и конец месяца
-        LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0);
-        LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1);
-
-        // получаем список заказов за месяц
-        List<Order> orders = orderRepository.findByDateBetween(startOfMonth, endOfMonth);
-
-        // создаем CSV файл
-        String fileName = "monthly_report_" + year + "-" + month + ".csv";
-        try (PrintWriter writer = new PrintWriter(fileName)) {
-            // записываем заголовок файла
-            writer.write("Order ID,Date,Status,User ID,Product ID\n");
-
-            // записываем данные о заказах
-            for (Order order : orders) {
-                writer.write(order.getId() + ",");
-                writer.write(order.getDate().format(formatter) + ",");
-                writer.write(order.getStatus() + ",");
-                writer.write(order.getUser().getId() + ",");
-                writer.write(order.getProduct().getId() + "\n");
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        // возвращаем ссылку на CSV файл
-        return fileName;
-    }
-
-    public ResponseEntity<byte[]> downloadMonthlyReport(int year, int month) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        // определяем начало и конец месяца
-        LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0);
-        LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1);
-
-        // получаем список заказов за месяц
-        List<Order> orders = orderRepository.findByDateBetween(startOfMonth, endOfMonth);
-
-        return download(orders);
-    }
-
-    public ResponseEntity<byte[]> downloadUserOrdersInfo(Long userId) {
-        return download(orderService.getOrdersByUserId(userId));
-    }
-
-    public ResponseEntity<byte[]> download(List<Order> orders) {
-        // Создаем CSVWriter для записи данных в CSV-файл
         StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-        // Записываем заголовок CSV-файла
-        csvWriter.writeNext(new String[]{"ID", "Дата", "Статус", "Имя пользователя", "Наименование товара"});
-
-        // Записываем данные заказов в CSV-файл
-        for (Order order : orders) {
-            csvWriter.writeNext(new String[]{
-                    order.getId().toString(),
-                    order.getDate().toString(),
-                    order.getStatus().toString(),
-                    order.getUser().getFullName(),
-                    order.getProduct().getName()
-            });
-        }
-
-        // Освобождаем ресурсы CSVWriter'а
-        try {
-            csvWriter.close();
+        try (CSVWriter csvWriter = new CSVWriter(stringWriter)) {
+            csvWriter.writeNext(new String[]{"ID", "Название", "Описание", "Сумма выручки за месяц"});
+            for (Product product : products) {
+                csvWriter.writeNext(new String[]{
+                        product.getId().toString(),
+                        product.getName(),
+                        product.getDescription(),
+                        product.getOrders().stream()
+                                .filter(e -> e.getStatus().equals(OrderStatus.ACCEPTED)).toString()
+                });
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        // Конвертируем данные CSV-файла в массив байтов
-        byte[] csvData = stringWriter.toString().getBytes(StandardCharsets.UTF_8);
+        return csvDownload.convertToByteArray(stringWriter);
+    }
 
-        // Создаем HTTP-ответ с заголовками, указывающими на тип и имя файла
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDisposition(ContentDisposition.attachment().filename("orders.csv").build());
+    // метод для получения месячного отчета по заказам
+    public ResponseEntity<byte[]> downloadMonthlyReport(int year, int month) {
+        // определяем начало и конец месяца
+        LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0);
+        LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1);
 
-        // Возвращаем HTTP-ответ с массивом байтов CSV-файла
-        return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
+        // получаем список заказов за месяц
+        return csvDownload.download(orderService.getOrdersByDateBetween(startOfMonth, endOfMonth));
+    }
+
+    // метод получения списка транзакций пользователя
+    public ResponseEntity<byte[]> downloadUserOrdersInfo(Long userId) {
+        return csvDownload.download(orderService.getOrdersByUserId(userId));
     }
 
 }

@@ -2,7 +2,6 @@ package com.arsen.controllers;
 
 import com.arsen.dtos.OrderDto;
 import com.arsen.mappers.OrderMapper;
-import com.arsen.models.Order;
 import com.arsen.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,30 +23,24 @@ public class OrderController {
 
     @GetMapping
     public List<OrderDto> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
-        return orders.stream()
+        return orderService.getAllOrders().stream()
                 .map(orderMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public OrderDto getOrderById(@PathVariable Long id) {
-        Order order = orderService.getOrderById(id);
-        return orderMapper.toDto(order);
+        return orderMapper.toDto(orderService.getOrderById(id));
     }
 
     @PostMapping
     public OrderDto createOrder(@RequestBody OrderDto orderDto) {
-        Order order = orderMapper.toEntity(orderDto);
-        Order createdOrder = orderService.createOrder(order);
-        return orderMapper.toDto(createdOrder);
+        return orderMapper.toDto(orderService.createOrder(orderMapper.toEntity(orderDto)));
     }
 
-    @PutMapping
-    public OrderDto updateOrder(@RequestBody OrderDto orderDto) {
-        Order order = orderMapper.toEntity(orderDto);
-        Order updatedOrder = orderService.updateOrder(order);
-        return orderMapper.toDto(updatedOrder);
+    @PutMapping("/{id}")
+    public OrderDto updateOrder(@PathVariable Long id, @RequestBody OrderDto orderDto) {
+        return orderMapper.toDto(orderService.updateOrder(id, orderMapper.toEntity(orderDto)));
     }
 
     @DeleteMapping("/{orderId}")
