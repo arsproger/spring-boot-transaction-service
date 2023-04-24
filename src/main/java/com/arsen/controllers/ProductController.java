@@ -50,10 +50,10 @@ public class ProductController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto productDto) {
+    @PostMapping("/{id}")
+    public ProductDto createProduct(@PathVariable("id") Long companyId, @RequestBody ProductDto productDto) {
         Product product = productMapper.toEntity(productDto);
-        Product createdProduct = productService.createProduct(product);
+        Product createdProduct = productService.createProduct(companyId, product);
         return productMapper.toDto(createdProduct);
     }
 

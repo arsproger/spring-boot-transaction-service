@@ -1,9 +1,7 @@
 package com.arsen.controllers;
 
-import com.arsen.dtos.ProductDto;
 import com.arsen.dtos.UserDto;
 import com.arsen.mappers.UserMapper;
-import com.arsen.models.Product;
 import com.arsen.models.User;
 import com.arsen.services.UserService;
 import org.springframework.web.bind.annotation.*;

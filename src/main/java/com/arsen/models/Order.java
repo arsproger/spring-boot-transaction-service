@@ -1,5 +1,6 @@
 package com.arsen.models;
 
+import com.arsen.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime date;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
