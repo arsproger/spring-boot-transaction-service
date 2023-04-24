@@ -133,8 +133,7 @@ public class AdminService {
         return fileName;
     }
 
-    public ResponseEntity<byte[]> download(int year, int month) {
-        // создаем форматтер для даты
+    public ResponseEntity<byte[]> downloadMonthlyReport(int year, int month) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         // определяем начало и конец месяца
@@ -144,6 +143,14 @@ public class AdminService {
         // получаем список заказов за месяц
         List<Order> orders = orderRepository.findByDateBetween(startOfMonth, endOfMonth);
 
+        return download(orders);
+    }
+
+    public ResponseEntity<byte[]> downloadUserOrdersInfo(Long userId) {
+        return download(orderService.getOrdersByUserId(userId));
+    }
+
+    public ResponseEntity<byte[]> download(List<Order> orders) {
         // Создаем CSVWriter для записи данных в CSV-файл
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
@@ -170,7 +177,7 @@ public class AdminService {
         }
 
         // Конвертируем данные CSV-файла в массив байтов
-        byte[] csvData = stringWriter.toString().getBytes();
+        byte[] csvData = stringWriter.toString().getBytes(StandardCharsets.UTF_8);
 
         // Создаем HTTP-ответ с заголовками, указывающими на тип и имя файла
         HttpHeaders headers = new HttpHeaders();

@@ -33,8 +33,13 @@ public class AdminController {
     }
 
     @GetMapping("/generate-monthly-report")
-    public ResponseEntity<byte[]> downloadCsv(@RequestParam Integer year, @RequestParam Integer month) {
-        return adminService.download(year, month);
+    public ResponseEntity<byte[]> downloadMonthReport(@RequestParam Integer year, @RequestParam Integer month) {
+        return adminService.downloadMonthlyReport(year, month);
+    }
+
+    @GetMapping("/generate-user-orders")
+    public ResponseEntity<byte[]> downloadUserOrdersInfo(@RequestParam Long userId) {
+        return adminService.downloadUserOrdersInfo(userId);
     }
 
 }
