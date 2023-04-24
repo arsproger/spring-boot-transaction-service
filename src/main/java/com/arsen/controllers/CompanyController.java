@@ -32,18 +32,18 @@ public class CompanyController {
     }
 
     @PostMapping
-    public CompanyDto createCompany(@RequestBody CompanyDto companyDto) {
-        return companyMapper.toDto(companyService.saveCompany(companyMapper.toEntity(companyDto)));
+    public Long createCompany(@RequestBody CompanyDto companyDto) {
+        return companyService.saveCompany(companyMapper.toEntity(companyDto));
     }
 
     @PutMapping("/{id}")
-    public CompanyDto updateCompany(@PathVariable Long id, @RequestBody CompanyDto companyDto) {
-        return companyMapper.toDto(companyService.updateCompany(id, companyMapper.toEntity(companyDto)));
+    public Long updateCompany(@PathVariable Long id, @RequestBody CompanyDto companyDto) {
+        return companyService.updateCompany(id, companyMapper.toEntity(companyDto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCompanyById(@PathVariable Long id) {
-        companyService.deleteCompany(id);
+    public Long deleteCompanyById(@PathVariable Long id) {
+        return companyService.deleteCompany(id);
     }
 
 }

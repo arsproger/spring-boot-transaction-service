@@ -3,6 +3,7 @@ package com.arsen.controllers;
 import com.arsen.dtos.UserDto;
 import com.arsen.mappers.UserMapper;
 import com.arsen.services.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,19 +37,24 @@ public class UserController {
         return userMapper.toDto(userService.getUserByEmail(email));
     }
 
+    @GetMapping("/orders-history")
+    public ResponseEntity<byte[]> downloadUserOrdersInfo(@RequestParam Long userId) {
+        return userService.downloadUserOrdersInfo(userId);
+    }
+
     @PostMapping
-    public UserDto createUser(@RequestBody UserDto userDto) {
-        return userMapper.toDto(userService.createUser(userMapper.toEntity(userDto)));
+    public Long createUser(@RequestBody UserDto userDto) {
+        return userService.createUser(userMapper.toEntity(userDto));
     }
 
     @PutMapping("/{id}")
-    public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        return userMapper.toDto(userService.updateUser(id, userMapper.toEntity(userDto)));
+    public Long updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        return userService.updateUser(id, userMapper.toEntity(userDto));
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+    public Long deleteUser(@PathVariable Long userId) {
+        return userService.deleteUser(userId);
     }
 
 }

@@ -46,19 +46,18 @@ public class ProductController {
     }
 
     @PostMapping("/{id}")
-    public ProductDto createProduct(@PathVariable("id") Long companyId, @RequestBody ProductDto productDto) {
-        return productMapper.toDto(productService
-                .createProduct(companyId, productMapper.toEntity(productDto)));
+    public Long createProduct(@PathVariable("id") Long companyId, @RequestBody ProductDto productDto) {
+        return productService.createProduct(companyId, productMapper.toEntity(productDto));
     }
 
     @PutMapping("/{id}")
-    public ProductDto updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
-        return productMapper.toDto(productService.updateProduct(id, productMapper.toEntity(productDto)));
+    public Long updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+        return productService.updateProduct(id, productMapper.toEntity(productDto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
+    public Long deleteProduct(@PathVariable Long id) {
+        return productService.deleteProduct(id);
     }
 
 }

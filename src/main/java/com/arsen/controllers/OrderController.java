@@ -34,18 +34,18 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderDto createOrder(@RequestBody OrderDto orderDto) {
-        return orderMapper.toDto(orderService.createOrder(orderMapper.toEntity(orderDto)));
+    public Long createOrder(@RequestBody OrderDto orderDto) {
+        return orderService.createOrder(orderMapper.toEntity(orderDto));
     }
 
     @PutMapping("/{id}")
-    public OrderDto updateOrder(@PathVariable Long id, @RequestBody OrderDto orderDto) {
-        return orderMapper.toDto(orderService.updateOrder(id, orderMapper.toEntity(orderDto)));
+    public Long updateOrder(@PathVariable Long id, @RequestBody OrderDto orderDto) {
+        return orderService.updateOrder(id, orderMapper.toEntity(orderDto));
     }
 
     @DeleteMapping("/{orderId}")
-    public void deleteOrder(@PathVariable Long orderId) {
-        orderService.deleteOrder(orderId);
+    public Long deleteOrder(@PathVariable Long orderId) {
+        return orderService.deleteOrder(orderId);
     }
 
 }

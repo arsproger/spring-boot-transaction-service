@@ -22,24 +22,24 @@ public class CompanyService {
         return companyRepository.findById(id).orElse(null);
     }
 
-    public Company saveCompany(Company company) {
-        return companyRepository.save(company);
+    public Long saveCompany(Company company) {
+        return companyRepository.save(company).getId();
     }
 
-    public void deleteCompany(Long id) {
+    public Long deleteCompany(Long id) {
         companyRepository.deleteById(id);
+        return id;
     }
 
-    public Company updateCompany(Long id, Company updatedCompany) {
+    public Long updateCompany(Long id, Company updatedCompany) {
         Company company = companyRepository.findById(id).orElse(null);
-        if(company == null)
+        if (company == null)
             return null;
 
         company.setName(updatedCompany.getName());
         company.setBalance(updatedCompany.getBalance());
 
-        companyRepository.save(company);
+        return companyRepository.save(company).getId();
     }
-
 
 }

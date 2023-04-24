@@ -20,7 +20,6 @@ target/
 *.ipr
 .mvn
 tz.txt
-src/main/resources/config.properties
 target
 
 ### NetBeans ###

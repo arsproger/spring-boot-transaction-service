@@ -23,25 +23,25 @@ public class OrderService {
         return orderRepository.findById(orderId).orElse(null);
     }
 
-    public Order createOrder(Order order) {
-        return orderRepository.save(order);
+    public Long createOrder(Order order) {
+        return orderRepository.save(order).getId();
     }
 
-    public void deleteOrder(Long orderId) {
-        Order order = getOrderById(orderId);
-        orderRepository.delete(order);
+    public Long deleteOrder(Long orderId) {
+        orderRepository.deleteById(orderId);
+        return orderId;
     }
 
-    public Order updateOrder(Long orderId, Order updatedOrder) {
+    public Long updateOrder(Long orderId, Order updatedOrder) {
         Order order = orderRepository.findById(orderId).orElse(null);
-        if(order == null)
+        if (order == null)
             return null;
 
         order.setStatus(updatedOrder.getStatus());
         order.setUser(updatedOrder.getUser());
         order.setProduct(updatedOrder.getProduct());
 
-        return orderRepository.save(order);
+        return orderRepository.save(order).getId();
     }
 
     public List<Order> getOrdersByUserId(Long userId) {

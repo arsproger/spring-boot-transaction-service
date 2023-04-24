@@ -27,6 +27,11 @@ public class AdminController {
         return adminService.reserving(userId, productId);
     }
 
+    @PostMapping("/un-reserving")
+    public Boolean unReserving(@RequestParam Long orderId) {
+        return adminService.unReserving(orderId);
+    }
+
     @PostMapping("/revenue-recognition")
     public Boolean revenueRecognition(@RequestParam Long orderId) {
         return adminService.revenueRecognition(orderId);
@@ -40,11 +45,6 @@ public class AdminController {
     @GetMapping("/monthly-product-report")
     public ResponseEntity<byte[]> downloadMonthlyProductReport(@RequestParam Long companyId) {
         return adminService.downloadMonthlyProductReport(companyId);
-    }
-
-    @GetMapping("/user-orders-history")
-    public ResponseEntity<byte[]> downloadUserOrdersInfo(@RequestParam Long userId) {
-        return adminService.downloadUserOrdersInfo(userId);
     }
 
 }

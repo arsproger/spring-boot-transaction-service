@@ -17,10 +17,10 @@ public class ProductService {
         this.companyService = companyService;
     }
 
-    public Product createProduct(Long companyId, Product product) {
+    public Long createProduct(Long companyId, Product product) {
         Company company = companyService.getCompanyById(companyId);
         product.setCompany(company);
-        return productRepository.save(product);
+        return productRepository.save(product).getId();
     }
 
     public Product getProductById(Long productId) {
@@ -35,7 +35,7 @@ public class ProductService {
         return productRepository.findByUserId(userId);
     }
 
-    public Product updateProduct(Long id, Product updatedProduct) {
+    public Long updateProduct(Long id, Product updatedProduct) {
         Product product = productRepository.findById(id).orElse(null);
         if (product == null)
             return null;
@@ -46,14 +46,16 @@ public class ProductService {
         product.setUser(updatedProduct.getUser());
         product.setCompany(updatedProduct.getCompany());
 
-        return productRepository.save(updatedProduct);
+        return productRepository.save(updatedProduct).getId();
     }
 
-    public void deleteProduct(Long productId) {
+    public Long deleteProduct(Long productId) {
         productRepository.deleteById(productId);
+        return productId;
     }
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
+
 }

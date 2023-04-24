@@ -15,6 +15,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -86,6 +87,21 @@ public class AdminService {
         return true;
     }
 
+    //    сценарий разрезервирования денег, если услугу применить не удалось (отмена установки услуги)
+    public Boolean unReserving(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+        User user = order.getUser();
+        if (order.getStatus().equals(OrderStatus.ACCEPTED) ||
+                user.getReserveBalance().compareTo(order.getProduct().getPrice()) < 0)
+            return false;
+
+        user.setReserveBalance(user.getReserveBalance().subtract(order.getProduct().getPrice()));
+        user.setBalance(user.getBalance().add(order.getProduct().getPrice()));
+
+        userService.updateUser(user.getId(), user);
+        return true;
+    }
+
     // метод для получения месячного отчета по каждой услуге компании
     public ResponseEntity<byte[]> downloadMonthlyProductReport(Long companyId) {
         Company company = companyService.getCompanyById(companyId);
@@ -99,8 +115,9 @@ public class AdminService {
                         product.getId().toString(),
                         product.getName(),
                         product.getDescription(),
-                        product.getOrders().stream()
-                                .filter(e -> e.getStatus().equals(OrderStatus.ACCEPTED)).toString()
+                        String.valueOf(product.getOrders().stream()
+                                .filter(e -> e.getStatus().equals(OrderStatus.ACCEPTED))
+                                .mapToLong(e -> e.getProduct().getPrice().longValue()).sum())
                 });
             }
         } catch (IOException e) {
@@ -118,11 +135,6 @@ public class AdminService {
 
         // получаем список заказов за месяц
         return csvDownload.download(orderService.getOrdersByDateBetween(startOfMonth, endOfMonth));
-    }
-
-    // метод получения списка транзакций пользователя
-    public ResponseEntity<byte[]> downloadUserOrdersInfo(Long userId) {
-        return csvDownload.download(orderService.getOrdersByUserId(userId));
     }
 
 }

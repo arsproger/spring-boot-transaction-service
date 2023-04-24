@@ -13,24 +13,23 @@ import java.util.List;
 
 @Component
 public class CsvDownload {
+
     public ResponseEntity<byte[]> download(List<Order> orders) {
         StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-        csvWriter.writeNext(new String[]{"ID", "Дата", "Статус", "Имя пользователя",
-                "Наименование товара", "Описание товара", "Стоимость"});
-        for (Order order : orders) {
-            csvWriter.writeNext(new String[]{
-                    order.getId().toString(),
-                    order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                    order.getStatus().toString(),
-                    order.getUser().getFullName(),
-                    order.getProduct().getName(),
-                    order.getProduct().getDescription(),
-                    order.getProduct().getPrice().toString()
-            });
-        }
-        try {
-            csvWriter.close();
+        try (CSVWriter csvWriter = new CSVWriter(stringWriter)) {
+            csvWriter.writeNext(new String[]{"ID", "Дата", "Статус", "Имя пользователя",
+                    "Наименование товара", "Описание товара", "Стоимость"});
+            for (Order order : orders) {
+                csvWriter.writeNext(new String[]{
+                        order.getId().toString(),
+                        order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                        order.getStatus().toString(),
+                        order.getUser().getFullName(),
+                        order.getProduct().getName(),
+                        order.getProduct().getDescription(),
+                        order.getProduct().getPrice().toString()
+                });
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -45,4 +44,5 @@ public class CsvDownload {
         headers.setContentDisposition(ContentDisposition.attachment().filename("orders.csv").build());
         return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
     }
+
 }
