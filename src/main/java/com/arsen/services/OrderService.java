@@ -1,6 +1,8 @@
 package com.arsen.services;
 
+import com.arsen.enums.OrderStatus;
 import com.arsen.models.Order;
+import com.arsen.models.Product;
 import com.arsen.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +52,12 @@ public class OrderService {
 
     public List<Order> getOrdersByDateBetween(LocalDateTime start, LocalDateTime end) {
         return orderRepository.findByDateBetween(start, end);
+    }
+
+    public Long orderSumByProductId(Long productId) {
+        return orderRepository.findByProductId(productId)
+                .stream().filter(e -> e.getStatus().equals(OrderStatus.ACCEPTED))
+                .mapToLong(e -> e.getProduct().getPrice().longValue()).sum();
     }
 
 }

@@ -12,4 +12,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByDateBetween(LocalDateTime start, LocalDateTime end);
 
     List<Order> findByUserId(Long userId);
+
+    List<Order> findByProductId(Long id);
 }

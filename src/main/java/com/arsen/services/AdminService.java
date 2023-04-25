@@ -115,9 +115,7 @@ public class AdminService {
                         product.getId().toString(),
                         product.getName(),
                         product.getDescription(),
-                        String.valueOf(product.getOrders().stream()
-                                .filter(e -> e.getStatus().equals(OrderStatus.ACCEPTED))
-                                .mapToLong(e -> e.getProduct().getPrice().longValue()).sum())
+                        orderService.orderSumByProductId(product.getId()).toString()
                 });
             }
         } catch (IOException e) {
