@@ -15,10 +15,9 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class AdminService {
+public class OperationService {
     private final CsvDownload csvDownload;
     private final UserService userService;
     private final ProductService productService;
@@ -26,8 +25,8 @@ public class AdminService {
     private final CompanyService companyService;
 
     @Autowired
-    public AdminService(CsvDownload csvDownload, UserService userService, ProductService productService,
-                        OrderService orderService, CompanyService companyService) {
+    public OperationService(CsvDownload csvDownload, UserService userService, ProductService productService,
+                            OrderService orderService, CompanyService companyService) {
         this.csvDownload = csvDownload;
         this.userService = userService;
         this.productService = productService;
@@ -71,7 +70,7 @@ public class AdminService {
         User user = order.getUser();
 
         if (user.getReserveBalance().compareTo(product.getPrice()) < 0 ||
-                order.getStatus().equals(OrderStatus.ACCEPTED))
+                !order.getStatus().equals(OrderStatus.PENDING))
             return false;
 
         user.setReserveBalance(user.getReserveBalance().subtract(product.getPrice()));
@@ -91,12 +90,13 @@ public class AdminService {
     public Boolean unReserving(Long orderId) {
         Order order = orderService.getOrderById(orderId);
         User user = order.getUser();
-        if (order.getStatus().equals(OrderStatus.ACCEPTED) ||
-                user.getReserveBalance().compareTo(order.getProduct().getPrice()) < 0)
+        if (user.getReserveBalance().compareTo(order.getProduct().getPrice()) < 0 ||
+                !order.getStatus().equals(OrderStatus.PENDING))
             return false;
 
         user.setReserveBalance(user.getReserveBalance().subtract(order.getProduct().getPrice()));
         user.setBalance(user.getBalance().add(order.getProduct().getPrice()));
+        order.setStatus(OrderStatus.CANCELED);
 
         userService.updateUser(user.getId(), user);
         return true;

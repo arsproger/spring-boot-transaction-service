@@ -42,11 +42,6 @@ public class UserController {
         return userService.downloadUserOrdersInfo(userId);
     }
 
-    @PostMapping
-    public Long createUser(@RequestBody UserDto userDto) {
-        return userService.createUser(userMapper.toEntity(userDto));
-    }
-
     @PutMapping("/{id}")
     public Long updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
         return userService.updateUser(id, userMapper.toEntity(userDto));

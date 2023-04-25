@@ -1,6 +1,7 @@
 package com.arsen.enums;
 
 public enum OrderStatus {
-    PENDING,
-    ACCEPTED
+    PENDING,   // В ожидании
+    ACCEPTED, // Принят
+    CANCELED // Отменен
 }

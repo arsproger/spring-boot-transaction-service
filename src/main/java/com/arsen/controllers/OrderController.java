@@ -43,8 +43,8 @@ public class OrderController {
         return orderService.updateOrder(id, orderMapper.toEntity(orderDto));
     }
 
-    @DeleteMapping("/{orderId}")
-    public Long deleteOrder(@PathVariable Long orderId) {
+    @DeleteMapping("/{id}")
+    public Long deleteOrder(@PathVariable("id") Long orderId) {
         return orderService.deleteOrder(orderId);
     }
 

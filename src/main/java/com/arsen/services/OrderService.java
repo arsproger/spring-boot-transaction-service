@@ -2,7 +2,6 @@ package com.arsen.services;
 
 import com.arsen.enums.OrderStatus;
 import com.arsen.models.Order;
-import com.arsen.models.Product;
 import com.arsen.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
 
