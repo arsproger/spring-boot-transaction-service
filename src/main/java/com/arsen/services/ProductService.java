@@ -33,10 +33,6 @@ public class ProductService {
         return productRepository.findByCompanyId(companyId);
     }
 
-    public List<Product> getProductsByUserId(Long userId) {
-        return productRepository.findByUserId(userId);
-    }
-
     public Long updateProduct(Long id, Product updatedProduct) {
         Product product = productRepository.findById(id).orElse(null);
         if (product == null)

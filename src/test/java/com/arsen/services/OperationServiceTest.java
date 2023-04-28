@@ -32,7 +32,7 @@ public class OperationServiceTest {
     @InjectMocks
     private OperationService operationService;
 
-    @Test
+    @Test // тест для проверки пополнения баланса пользователя
     public void testReplenishment() {
         User user = User.builder().balance(new BigDecimal("5000.00")).build();
 
@@ -43,7 +43,7 @@ public class OperationServiceTest {
         assertThat(user.getBalance()).isEqualTo(new BigDecimal("5500.00"));
     }
 
-    @Test
+    @Test // тест для проверки резервирования средств, при активации услуги
     public void testReserving() {
         User user = User.builder().balance(new BigDecimal("5000.00")).reserveBalance(BigDecimal.ZERO).build();
         Product product = Product.builder().price(new BigDecimal("1200.00")).build();
@@ -61,7 +61,7 @@ public class OperationServiceTest {
         assertThat(operationService.reserving(user.getId(), product.getId())).isFalse();
     }
 
-    @Test
+    @Test // тест для проверки признания выручки
     public void testRevenueRecognition() {
         User user = User.builder().balance(new BigDecimal("5000.00"))
                 .reserveBalance(new BigDecimal("2000.00")).build();
@@ -84,7 +84,7 @@ public class OperationServiceTest {
         assertThat(operationService.revenueRecognition(order.getId())).isFalse();
     }
 
-    @Test
+    @Test // тест для проверки отмены активации услуги и отмены резервирования средств
     public void testUnReserving() {
         User user = User.builder().balance(new BigDecimal("5000.00"))
                 .reserveBalance(new BigDecimal("3000.00")).build();
@@ -101,7 +101,6 @@ public class OperationServiceTest {
 
         assertThat(operationService.unReserving(order.getId())).isFalse();
     }
-
 
 
 }

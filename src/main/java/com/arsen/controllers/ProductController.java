@@ -38,12 +38,12 @@ public class ProductController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/user/{userId}")
-    public List<ProductDto> getProductsByUserId(@PathVariable Long userId) {
-        return productService.getProductsByUserId(userId).stream()
-                .map(productMapper::toDto)
-                .collect(Collectors.toList());
-    }
+//    @GetMapping("/user/{userId}")
+//    public List<ProductDto> getProductsByUserId(@PathVariable Long userId) {
+//        return productService.getProductsByUserId(userId).stream()
+//                .map(productMapper::toDto)
+//                .collect(Collectors.toList());
+//    }
 
     @PostMapping("/{id}")
     public Long createProduct(@PathVariable("id") Long companyId, @RequestBody ProductDto productDto) {
