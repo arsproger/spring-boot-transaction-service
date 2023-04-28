@@ -5,6 +5,7 @@ import com.arsen.models.Product;
 import com.arsen.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -20,6 +21,7 @@ public class ProductService {
     public Long createProduct(Long companyId, Product product) {
         Company company = companyService.getCompanyById(companyId);
         product.setCompany(company);
+        if (product.getPrice() == null) product.setPrice(BigDecimal.ZERO);
         return productRepository.save(product).getId();
     }
 
@@ -43,7 +45,6 @@ public class ProductService {
         product.setName(updatedProduct.getName());
         product.setDescription(updatedProduct.getDescription());
         product.setPrice(updatedProduct.getPrice());
-        product.setUser(updatedProduct.getUser());
         product.setCompany(updatedProduct.getCompany());
 
         return productRepository.save(updatedProduct).getId();

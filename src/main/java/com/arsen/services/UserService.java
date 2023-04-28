@@ -23,8 +23,8 @@ public class UserService {
 
     public Long createUser(User user) {
         user.setRole(Role.ROLE_USER);
-        if (user.getBalance() == null) user.setBalance(new BigDecimal(0));
-        if (user.getReserveBalance() == null) user.setReserveBalance(new BigDecimal(0));
+        if (user.getBalance() == null) user.setBalance(BigDecimal.ZERO);
+        if (user.getReserveBalance() == null) user.setReserveBalance(BigDecimal.ZERO);
 
         return userRepository.save(user).getId();
     }

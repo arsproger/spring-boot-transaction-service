@@ -8,6 +8,7 @@ import com.arsen.models.User;
 import com.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
+@Component
 public class OperationService {
     private final CsvDownload csvDownload;
     private final UserService userService;
@@ -76,7 +77,7 @@ public class OperationService {
         user.setReserveBalance(user.getReserveBalance().subtract(product.getPrice()));
         company.setBalance(company.getBalance().add(product.getPrice()));
         order.setStatus(OrderStatus.ACCEPTED);
-        product.setUser(user);
+        product.getUsers().add(user);
 
         orderService.updateOrder(order.getId(), order);
         companyService.updateCompany(company.getId(), company);
@@ -86,7 +87,7 @@ public class OperationService {
         return true;
     }
 
-    //    сценарий разрезервирования денег, если услугу применить не удалось (отмена установки услуги)
+    // сценарий разрезервирования денег, если услугу применить не удалось (отмена установки услуги)
     public Boolean unReserving(Long orderId) {
         Order order = orderService.getOrderById(orderId);
         User user = order.getUser();
