@@ -1,5 +1,6 @@
 package com.arsen.services;
 
+import com.arsen.exceptions.ApiException;
 import com.arsen.models.Company;
 import com.arsen.repositories.CompanyRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,8 @@ public class CompanyService {
     }
 
     public Company getCompanyById(Long id) {
-        return companyRepository.findById(id).orElse(null);
+        return companyRepository.findById(id).orElseThrow(
+                () -> new ApiException("Company with this id was not found!"));
     }
 
     public Long saveCompany(Company company) {
@@ -32,9 +34,8 @@ public class CompanyService {
     }
 
     public Long updateCompany(Long id, Company updatedCompany) {
-        Company company = companyRepository.findById(id).orElse(null);
-        if (company == null)
-            return null;
+        Company company = companyRepository.findById(id).orElseThrow(
+                () -> new ApiException("Company with this id was not found!"));
 
         company.setName(updatedCompany.getName());
         company.setBalance(updatedCompany.getBalance());

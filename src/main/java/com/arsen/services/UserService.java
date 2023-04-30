@@ -1,6 +1,7 @@
 package com.arsen.services;
 
 import com.arsen.enums.Role;
+import com.arsen.exceptions.ApiException;
 import com.arsen.models.User;
 import com.arsen.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +35,8 @@ public class UserService {
     }
 
     public Long updateUser(Long id, User updatedUser) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null)
-            return null;
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new ApiException("User with this id was not found!"));
 
         user.setFullName(updatedUser.getFullName());
         user.setBalance(updatedUser.getBalance());
@@ -55,7 +55,8 @@ public class UserService {
     }
 
     public User getUserById(Long userID) {
-        return userRepository.findById(userID).orElse(null);
+        return userRepository.findById(userID).orElseThrow(
+                () -> new ApiException("User with this id was not found!"));
     }
 
 

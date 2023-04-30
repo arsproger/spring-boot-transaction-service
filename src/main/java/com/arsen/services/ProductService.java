@@ -1,5 +1,6 @@
 package com.arsen.services;
 
+import com.arsen.exceptions.ApiException;
 import com.arsen.models.Company;
 import com.arsen.models.Product;
 import com.arsen.repositories.ProductRepository;
@@ -26,7 +27,8 @@ public class ProductService {
     }
 
     public Product getProductById(Long productId) {
-        return productRepository.findById(productId).orElse(null);
+        return productRepository.findById(productId).orElseThrow(
+                () -> new ApiException("Product with this id was not found!"));
     }
 
     public List<Product> getProductsByCompanyId(Long companyId) {
@@ -34,9 +36,8 @@ public class ProductService {
     }
 
     public Long updateProduct(Long id, Product updatedProduct) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product == null)
-            return null;
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new ApiException("Product with this id was not found!"));
 
         product.setName(updatedProduct.getName());
         product.setDescription(updatedProduct.getDescription());

@@ -62,3 +62,8 @@
 
 * POST /operation/un-reserving?orderId={orderId}
 * Принимает id заказа для отмены услуги, если услуга не была еще применена
+
+## Ошибки поиска данных в программе были обработаны
+
+## Postman коллекции к сервису
+* https://api.postman.com/collections/25575265-7dc0eab0-0140-44d7-b1d0-1e653f064e89?access_key=PMAT-01GZ8MQSQXN0S2SVHBK3EVDSXA

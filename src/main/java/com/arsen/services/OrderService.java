@@ -1,6 +1,7 @@
 package com.arsen.services;
 
 import com.arsen.enums.OrderStatus;
+import com.arsen.exceptions.ApiException;
 import com.arsen.models.Order;
 import com.arsen.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,8 @@ public class OrderService {
     }
 
     public Order getOrderById(Long orderId) {
-        return orderRepository.findById(orderId).orElse(null);
+        return orderRepository.findById(orderId).orElseThrow(
+                () -> new ApiException("Order with this id was not found!"));
     }
 
     public Long createOrder(Order order) {
@@ -34,9 +36,8 @@ public class OrderService {
     }
 
     public Long updateOrder(Long orderId, Order updatedOrder) {
-        Order order = orderRepository.findById(orderId).orElse(null);
-        if (order == null)
-            return null;
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new ApiException("Order with this id was not found!"));
 
         order.setStatus(updatedOrder.getStatus());
         order.setUser(updatedOrder.getUser());
